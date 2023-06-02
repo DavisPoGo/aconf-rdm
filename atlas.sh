@@ -251,9 +251,9 @@ if [[ ! -f /data/local/aconf_download ]] ;then
     echo "`date +%Y-%m-%d_%T` File /data/local/aconf_download not found, exit script" >> $logfile && exit 1
 else
     if [[ $aconf_user == "" ]] ;then
-        download="/system/bin/curl -s -k -L --fail --show-error -o"
+        download="curl -s -k -L --fail --show-error -o"
     else
-        download="/system/bin/curl -s -k -L --fail --show-error --user $aconf_user:$aconf_pass -o"
+        download="curl -s -k -L --fail --show-error --user $aconf_user:$aconf_pass -o"
     fi
 fi
 
