@@ -6,7 +6,7 @@ Ver55atlas="1.0"
 Ver55cron="1.0"
 
 export ANDROID_DATA=/data
-export ANDROID_ROOT=/system
+export ANDROID_ROOT=/
 
 #Create logfile
 if [ ! -e /sdcard/aconf.log ] ;then
@@ -48,7 +48,7 @@ esac
 
 install_atlas(){
     # install 55atlas
-    mount -o remount,rw /system
+    mount -o remount,rw /
     mount -o remount,rw /system/etc/init.d || true
     until $download /system/etc/init.d/55atlas $aconf_download/55atlas || { echo "`date +%Y-%m-%d_%T` Download 55atlas failed, exit script" >> $logfile ; exit 1; } ;do
         sleep 2
@@ -57,14 +57,14 @@ install_atlas(){
     echo "`date +%Y-%m-%d_%T` 55atlas installed, from master" >> $logfile
 
     # install 55cron
-    until /system/bin/curl -s -k -L --fail --show-error -o  /system/etc/init.d/55cron https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/55cron || { echo "`date +%Y-%m-%d_%T` Download 55cron failed, exit script" >> $logfile ; exit 1; } ;do
+    until wget -q --no-check-certificate -O  /system/etc/init.d/55cron https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/55cron || { echo "`date +%Y-%m-%d_%T` Download 55cron failed, exit script" >> $logfile ; exit 1; } ;do
         sleep 2
     done
     chmod +x /system/etc/init.d/55cron
     echo "`date +%Y-%m-%d_%T` 55cron installed, from master" >> $logfile
 
     # install cron job
-    until /system/bin/curl -s -k -L --fail --show-error -o  /system/bin/ping_test.sh https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/ping_test.sh || { echo "`date +%Y-%m-%d_%T` Download ping_test.sh failed, exit script" >> $logfile ; exit 1; } ;do
+    until wget -q --no-check-certificate -O  /system/bin/ping_test.sh https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/ping_test.sh || { echo "`date +%Y-%m-%d_%T` Download ping_test.sh failed, exit script" >> $logfile ; exit 1; } ;do
         sleep 2
     done
     chmod +x /system/bin/ping_test.sh
@@ -73,7 +73,7 @@ install_atlas(){
     echo "15 * * * * /system/bin/ping_test.sh" > /system/etc/crontabs/root
     crond -b
 
-    mount -o remount,ro /system
+    mount -o remount,ro /
 
     # Remove any old MAD files
     /system/bin/rm -f 01madbootstrap 42mad 16mad
@@ -230,9 +230,9 @@ echo "`date +%Y-%m-%d_%T` Internet connection available" >> $logfile
 
 #download latest atlas.sh
 if [[ $(basename $0) != "atlas_new.sh" ]] ;then
-    mount -o remount,rw /system
+    mount -o remount,rw /
     oldsh=$(head -2 /system/bin/atlas.sh | /system/bin/grep '# version' | awk '{ print $NF }')
-    until /system/bin/curl -s -k -L --fail --show-error -o /system/bin/atlas_new.sh https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/atlas.sh || { echo "`date +%Y-%m-%d_%T` Download atlas.sh failed, exit script" >> $logfile ; exit 1; } ;do
+    until wget -q --no-check-certificate -O /system/bin/atlas_new.sh https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/atlas.sh || { echo "`date +%Y-%m-%d_%T` Download atlas.sh failed, exit script" >> $logfile ; exit 1; } ;do
         sleep 2
     done
     chmod +x /system/bin/atlas_new.sh
@@ -240,7 +240,7 @@ if [[ $(basename $0) != "atlas_new.sh" ]] ;then
     if [[ $oldsh != $newsh ]] ;then
         echo "`date +%Y-%m-%d_%T` atlas.sh $oldsh=>$newsh, restarting script" >> $logfile
         cp /system/bin/atlas_new.sh /system/bin/atlas.sh
-        mount -o remount,ro /system
+        mount -o remount,ro /
         /system/bin/atlas_new.sh $@
         exit 1
     fi
@@ -268,12 +268,12 @@ echo "`date +%Y-%m-%d_%T` Downloaded latest versions file"  >> $logfile
 if [[ $(basename $0) = "atlas_new.sh" ]] ;then
     old55=$(head -2 /system/etc/init.d/55atlas | /system/bin/grep '# version' | awk '{ print $NF }')
     if [ $Ver55atlas != $old55 ] ;then
-        mount -o remount,rw /system
-        until /system/bin/curl -s -k -L --fail --show-error -o /system/etc/init.d/55atlas https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/55atlas || { echo "`date +%Y-%m-%d_%T` Download 55atlas failed, exit script" >> $logfile ; exit 1; } ;do
+        mount -o remount,rw /
+        until wget -q --no-check-certificate -O /system/etc/init.d/55atlas https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/55atlas || { echo "`date +%Y-%m-%d_%T` Download 55atlas failed, exit script" >> $logfile ; exit 1; } ;do
             sleep 2
         done
         chmod +x /system/etc/init.d/55atlas
-        mount -o remount,ro /system
+        mount -o remount,ro /
         new55=$(head -2 /system/etc/init.d/55atlas | /system/bin/grep '# version' | awk '{ print $NF }')
         echo "`date +%Y-%m-%d_%T` 55atlas $old55=>$new55" >> $logfile
     fi
@@ -283,16 +283,16 @@ fi
 if [[ $(basename $0) = "atlas_new.sh" ]] ;then
     old55=$(head -2 /system/etc/init.d/55cron || echo "# version 0.0" | /system/bin/grep '# version' | awk '{ print $NF }')
     if [ $Ver55cron != $old55 ] ;then
-        mount -o remount,rw /system
+        mount -o remount,rw /
         # install 55cron
-        until /system/bin/curl -s -k -L --fail --show-error -o  /system/etc/init.d/55cron https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/55cron || { echo "`date +%Y-%m-%d_%T` Download 55cron failed, exit script" >> $logfile ; exit 1; } ;do
+        until wget -q --no-check-certificate -O  /system/etc/init.d/55cron https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/55cron || { echo "`date +%Y-%m-%d_%T` Download 55cron failed, exit script" >> $logfile ; exit 1; } ;do
             sleep 2
         done
         chmod +x /system/etc/init.d/55cron
         echo "`date +%Y-%m-%d_%T` 55cron installed, from master" >> $logfile
 
         # install cron job
-        until /system/bin/curl -s -k -L --fail --show-error -o  /system/bin/ping_test.sh https://raw.githubusercontent.com/Kneckter/aconf-rdm/master/ping_test.sh || { echo "`date +%Y-%m-%d_%T` Download ping_test.sh failed, exit script" >> $logfile ; exit 1; } ;do
+        until wget -q --no-check-certificate -O  /system/bin/ping_test.sh https://raw.githubusercontent.com/DavisPoGo/aconf-rdm/wget/ping_test.sh || { echo "`date +%Y-%m-%d_%T` Download ping_test.sh failed, exit script" >> $logfile ; exit 1; } ;do
             sleep 2
         done
         chmod +x /system/bin/ping_test.sh
@@ -300,7 +300,7 @@ if [[ $(basename $0) = "atlas_new.sh" ]] ;then
         touch /system/etc/crontabs/root
         echo "15 * * * * /system/bin/ping_test.sh" > /system/etc/crontabs/root
         crond -b
-        mount -o remount,ro /system
+        mount -o remount,ro /
         new55=$(head -2 /system/etc/init.d/55cron | /system/bin/grep '# version' | awk '{ print $NF }')
         echo "`date +%Y-%m-%d_%T` 55cron $old55=>$new55" >> $logfile
     fi
@@ -315,17 +315,17 @@ fi
 # set hostname = origin, wait till next reboot for it to take effect
 if [[ $origin != "" ]] ;then
     if [ $(/system/bin/cat /system/build.prop | /system/bin/grep net.hostname | wc -l) = 0 ]; then
-        mount -o remount,rw /system
+        mount -o remount,rw /
         echo "`date +%Y-%m-%d_%T` No hostname set, setting it to $origin" >> $logfile
         echo "net.hostname=$origin" >> /system/build.prop
-        mount -o remount,ro /system
+        mount -o remount,ro /
     else
         hostname=$(/system/bin/grep net.hostname /system/build.prop | awk 'BEGIN { FS = "=" } ; { print $2 }')
         if [[ $hostname != $origin ]] ;then
-            mount -o remount,rw /system
+            mount -o remount,rw /
             echo "`date +%Y-%m-%d_%T` Changing hostname, from $hostname to $origin" >> $logfile
             /system/bin/sed -i -e "s/^net.hostname=.*/net.hostname=$origin/g" /system/build.prop
-            mount -o remount,ro /system
+            mount -o remount,ro /
         fi
     fi
 fi
